@@ -4,6 +4,7 @@
 class Gospel_Resource_Hub_Settings {
 
 	public function __construct() {
+		exit;
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'admin_init', array( $this, 'save_settings' ) );
 	}
@@ -119,3 +120,5 @@ class Gospel_Resource_Hub_Settings {
 	}
 
 }
+
+new Gospel_Resource_Hub_Settings();

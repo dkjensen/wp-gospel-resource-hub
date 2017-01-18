@@ -19,4 +19,3 @@ final class Gospel_Resource_Hub_Connector {
 
 }
 
-$grhdb = Gospel_Resource_Hub_Connector::connect();

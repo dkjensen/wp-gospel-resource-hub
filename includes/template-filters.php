@@ -17,6 +17,9 @@ add_filter( 'the_permalink', 'grh_post_link', 99, 2 );
 function grh_post_query( $query ) {
 	global $wpdb, $grh_query;
 
+	if( is_admin() )
+		return $query;
+
 	if( preg_match( "/SELECT ([^\s]+) FROM " . $wpdb->posts . " (.*)/", $query, $matches ) ) {
 		$query = "SELECT {$matches[1]}, 0 as grh_item FROM $wpdb->posts {$matches[2]} UNION ALL " . $grh_query->query();
 	}

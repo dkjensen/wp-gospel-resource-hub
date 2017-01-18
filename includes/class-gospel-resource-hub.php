@@ -3,6 +3,7 @@
 
 class Gospel_Resource_Hub {
 
+	public $ready					  = false;
 
 	public $multilingual 			  = false;
 
@@ -32,20 +33,45 @@ class Gospel_Resource_Hub {
 	 * Initialize the plugin
 	 */
 	public function __construct() {
-		add_action( 'plugins_loaded', array( $this, 'setup' ) );
+		if( $this->ready() ) {
+			if( is_admin() ) {
+				include_once 'admin/class-gospel-resource-hub-settings.php';
+			}else {
+				// Internationalization
+				include_once 'includes/class-gospel-resource-hub-i18n.php';
+				include_once 'includes/i18n/class-polylang-gospel-resource-hub-i18n.php';
+
+				// Modify WP queries to include GRH Codex
+				include_once 'includes/class-gospel-resource-hub-query.php';
+				include_once 'template-filters.php';
+			}
+
+			$this->multilingual_integration();
+		}
+		
 	}
 
-	public function setup() {
-		global $grh_query;
 
-		if( is_admin() ) {
-			new Gospel_Resource_Hub_Settings();
-		}else {
-			$grh_query = new Gospel_Resource_Hub_Query();
+	public function ready() {
+		global $grh_db;
+
+		if( is_wp_error( $grh_db = Gospel_Resource_Hub_Connector::connect() ) ) {
+			
+			/**
+			 * Display an admin notice if we cannot connect to the database
+			 */
+			add_action( 'admin_notices', function() {
+				printf( '<div class="notice error is-dismissible"><p>%s</p></div>', __( 'Unable to connect to the Gospel Resource Hub database. Please make sure the Gospel Resource Hub database credentials are entered properly.', 'grh' ) );
+			} );
+
+			$this->ready = false;
+			return false;
 		}
 
-		$this->multilingual_integration();
+		$this->ready = true;
+		return true;
 	}
+
 
 	public function multilingual_integration() {
 		global $grh_i18n;

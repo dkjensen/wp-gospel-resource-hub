@@ -1,5 +1,6 @@
 <?php
 
+global $grh_query;
 
 class Gospel_Resource_Hub_Query {
 
@@ -12,13 +13,19 @@ class Gospel_Resource_Hub_Query {
 	protected $options;
 
 	public function __construct() {
+		global $grh_db;
+
+		var_dump( $grh_db );
+
+		if( is_wp_error( $grh_db ) ) {
+			return;
+		}
+
 		add_action( 'pre_get_posts', array( $this, 'parse_query' ) );
-
-
 	}
 
 	public function query() {
-		global $grhdb;
+		global $grh_db;
 
 		$post_type = (string) $this->options['post_type'];
 
@@ -48,7 +55,7 @@ class Gospel_Resource_Hub_Query {
 				''				as post_mime_type,
 				0				as comment_count,
 				1				as grh_item
-			FROM `{$grhdb->dbname}`.`Codex`";
+			FROM `{$grh_db->dbname}`.`Codex`";
 
 		return apply_filters( 'grh_query', $sql );
 	}
@@ -115,3 +122,5 @@ class Gospel_Resource_Hub_Query {
 	}
 
 }
+
+$grh_query = new Gospel_Resource_Hub_Query();

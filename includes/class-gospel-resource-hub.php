@@ -3,11 +3,31 @@
 
 class Gospel_Resource_Hub {
 
-	public $ready					  = false;
+	public $options;
 
-	public $multilingual 			  = false;
+	public function __construct() {
+		$this->options = get_option( 'gospelrh' );
+	}
 
-	public $multilingual_integration  = '';
+	public function load() {
+		if( is_admin() )
+			return;
+
+		$uri       = explode( '?', $_SERVER['REQUEST_URI'], 2 );
+		$path      = trim( $uri[0], '/' );
+		$wp_query  = $GLOBALS['wp_query'];
+		$post_type = isset( $this->options['post_type'] ) ? get_post_type_object( $this->options['post_type'] ) : false;
+		$query_uri = apply_filters( 'grh_query_uri', $post_type ? $post_type->rewrite['slug'] : false, $wp_query, $post_type, $path );
+
+		if( substr( $path, 0, strlen( $query_uri ) ) === $query_uri ) {
+	        $GLOBALS['wp_the_query'] = new GRH_Query();
+	        $GLOBALS['wp_query'] = $GLOBALS[ 'wp_the_query' ];
+
+	        add_action( 'pre_get_posts', array( $this, 'parse_query' ) );
+		}
+
+		$this->multilingual_integration();
+	}
 
 	/**
 	 * Multilingual integration status
@@ -17,62 +37,6 @@ class Gospel_Resource_Hub {
 	 * 2: OK
 	 * 
 	 */
-	public $multilingual_status		  = 0;
-
-	protected static $_instance 	  = null;
-
-	public static function instance() {
-		if( is_null( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	/**
-	 * Initialize the plugin
-	 */
-	public function __construct() {
-		if( $this->ready() ) {
-			if( is_admin() ) {
-				include_once 'admin/class-gospel-resource-hub-settings.php';
-			}else {
-				// Internationalization
-				include_once 'includes/class-gospel-resource-hub-i18n.php';
-				include_once 'includes/i18n/class-polylang-gospel-resource-hub-i18n.php';
-
-				// Modify WP queries to include GRH Codex
-				include_once 'includes/class-gospel-resource-hub-query.php';
-				include_once 'template-filters.php';
-			}
-
-			$this->multilingual_integration();
-		}
-		
-	}
-
-
-	public function ready() {
-		global $grh_db;
-
-		if( is_wp_error( $grh_db = Gospel_Resource_Hub_Connector::connect() ) ) {
-			
-			/**
-			 * Display an admin notice if we cannot connect to the database
-			 */
-			add_action( 'admin_notices', function() {
-				printf( '<div class="notice error is-dismissible"><p>%s</p></div>', __( 'Unable to connect to the Gospel Resource Hub database. Please make sure the Gospel Resource Hub database credentials are entered properly.', 'grh' ) );
-			} );
-
-			$this->ready = false;
-			return false;
-		}
-
-		$this->ready = true;
-		return true;
-	}
-
-
 	public function multilingual_integration() {
 		global $grh_i18n;
 
@@ -89,25 +53,87 @@ class Gospel_Resource_Hub {
 
 		$integration = apply_filters( 'grh_multilingual_integration', $integration );
 
+		$return = false;
+
 		if( $integration ) {
-			$this->multilingual_integration = $integration;
-			$this->multilingual_status		= 1;
-			$this->multilingual 			= true;
+			$return = array(
+				'integration'  => $integration,
+				'status'       => 1,
+				'multilingual' => true
+			);
 
 			$class_name = $integration . '_Gospel_Resource_Hub_i18n';
 
 			if( class_exists( $class_name ) ) {
 				$i18n = new $class_name;
 
+				$GLOBALS['grh_i18n'] = $i18n;
+
 				if( is_subclass_of( $i18n, 'Gospel_Resource_Hub_i18n' ) ) {
-					$this->multilingual_status = 2;
+					$return['status'] = 2;
 					$grh_i18n = $i18n;
 				}
 			}
-			
+		}
+
+		return $return;
+	}
+
+
+	public function query_vars( $vars ) {
+		$vars[] = 'language';
+		$vars[] = 'q';
+
+		return $vars;
+	}
+
+
+	public function parse_query( $query ) {
+		if( is_admin() )
+			return;
+
+		if( $query->is_main_query() && isset( $this->options['post_type'] ) && is_post_type_archive( $this->options['post_type'] ) ) {
+			add_filter( 'posts_results', array( $this, 'posts_results' ), 10, 2 );
 		}
 	}
 
+
+	public function posts_results( $posts, $query ) {
+		global $grh_db;
+
+		$post_type = (string) $this->options['post_type'];
+
+		$resources = $grh_db->get( 'resources' );
+
+		if( ! isset( $resources['posts'] ) ) {
+			return array();
+		}
+
+		$query->found_posts = $resources['found_posts'];
+		$query->max_num_pages = ceil( $query->found_posts / $query->query_vars['posts_per_page'] );
+
+		if( ! empty( $resources['posts'] ) && is_array( $resources['posts'] ) ) {
+
+			$posts = array();
+			foreach( $resources['posts'] as $resource ) {
+				$posts[] = new WP_Post( (object) array(
+					'ID' 				=> get_option( 'page_for_posts' ),
+					'post_title' 		=> $resource['description'],
+					'post_status' 		=> 'publish',
+					'comment_status' 	=> 'open',
+					'ping_status' 		=> 'open',
+					'post_author' 		=> '',
+					'post_excerpt'		=> '',
+					'post_date' 		=> $resource['date_created'],
+					'post_content' 		=> $resource['link'],
+					'post_type' 		=> $post_type,
+					'grh_item' 			=> 1,
+					'post_parent' 		=> 0,
+					'post_language'     => grh_convert_lang_code( $resource['lang_id'] )
+				) );
+			}
+		}
+
+		return $posts;
+	}
 }
-
-

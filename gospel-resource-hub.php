@@ -30,9 +30,24 @@ $grh_query =
 $grh_db    = 
 $grh_i18n  = new stdClass();
 
-include_once 'includes/class-gospel-resource-hub.php';
-include_once 'includes/class-gospel-resource-hub-connector.php';
+include_once GRH_PLUGIN_DIR . '/includes/language-functions.php';
+include_once GRH_PLUGIN_DIR . '/includes/class-gospel-resource-hub.php';
+include_once GRH_PLUGIN_DIR . '/includes/class-gospel-resource-hub-connector.php';
+include_once GRH_PLUGIN_DIR . '/includes/class-gospel-resource-hub-i18n.php';
+include_once GRH_PLUGIN_DIR . '/includes/i18n/class-polylang-gospel-resource-hub-i18n.php';
+include_once GRH_PLUGIN_DIR . '/includes/widgets/widget-gospel-resource-hub-filters.php';
+
+if( is_admin() ) {
+	include_once GRH_PLUGIN_DIR . '/includes/admin/class-gospel-resource-hub-settings.php';
+}else {
+	// Modify WP queries to include GRH Codex
+	include_once GRH_PLUGIN_DIR . '/includes/class-grh-query.php';
+	include_once GRH_PLUGIN_DIR . '/includes/template-filters.php';
+}
 
 
-$grh = Gospel_Resource_Hub::instance();
+$grh = new Gospel_Resource_Hub;
 
+add_action( 'wp_loaded', array( $grh, 'load' ), 1 );
+
+add_filter( 'query_vars', array( $grh, 'query_vars' ) );

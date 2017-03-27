@@ -23,7 +23,7 @@ class GRH_Filters extends WP_Widget {
 	 * @param array $instance Saved values from database.
 	 */
 	public function widget( $args, $instance ) {
-		global $wp_query;
+		global $wp_query, $grh;
 
 		if( ! $wp_query instanceof GRH_Query ) {
 			return '';
@@ -57,40 +57,41 @@ class GRH_Filters extends WP_Widget {
 
 		?>
 
-		<form method="get" id="grh-filters" action="">
+		<form method="get" id="grh-filters" action="<?php print esc_url( home_url( $grh->get_query_uri() ) ); ?>">
+			<div class="grh-filters-container">
+				<?php if( ! empty( $instance['show_search'] ) ) : ?>
 
-		<?php if( ! empty( $instance['show_search'] ) ) : ?>
+					<div class="grh-filter search">
+						<p><input type="search" name="q" value="<?php print esc_attr( get_query_var( 'q' ) ); ?>" placeholder="<?php _e( 'Search Gospel Resource Hub', 'grh' ); ?>" /></p>
+					</div>
+				
+				<?php endif;
 
-			<div class="grh-filter search">
-				<p><input type="search" name="q" value="<?php print esc_attr( get_query_var( 'q' ) ); ?>" placeholder="<?php _e( 'Search Gospel Resource Hub', 'grh' ); ?>" /></p>
+				if( ! empty( $instance['show_langs'] ) ) : ?>
+
+					<div class="grh-filter language">
+						<div class="grh-label"><label><?php _e( 'Display results in...', 'grh' ); ?></label></div>
+						<p><select name="language" id="grh-filter-language">
+							<option value=""><?php _e( 'All languages', 'grh' ); ?></option>
+							<?php
+							if( ! empty( $langs ) ) {
+								$selected = ! empty( get_query_var( 'language' ) ) ? esc_attr( get_query_var( 'language' ) ) : grh_convert_lang_code( grh_get_current_lang(), true );
+
+								var_dump( $selected );
+
+								foreach( $langs as $lang_id => $label ) {
+									printf( '<option value="%s" %s>%s</option>', $lang_id, selected( $selected, $lang_id ), $label );
+								}
+							}
+							?>
+						</select></p>
+					</div>
+
+				<?php endif; ?>
 			</div>
-		
-		<?php endif;
-
-		if( ! empty( $instance['show_langs'] ) ) : ?>
-
-			<div class="grh-label"><label><?php _e( 'Display results in...', 'grh' ); ?></label></div>
-			<div class="grh-filter language">
-				<p><select name="language" id="grh-filter-language">
-					<option value=""><?php _e( 'All languages', 'grh' ); ?></option>
-					<?php
-					if( ! empty( $langs ) ) {
-						$selected = ! empty( get_query_var( 'language' ) ) ? esc_attr( get_query_var( 'language' ) ) : grh_convert_lang_code( grh_get_current_lang(), true );
-
-						var_dump( $selected );
-
-						foreach( $langs as $lang_id => $label ) {
-							printf( '<option value="%s" %s>%s</option>', $lang_id, selected( $selected, $lang_id ), $label );
-						}
-					}
-					?>
-				</select></p>
+			<div class="grh-filter-submit">
+				<p><input type="submit" value="<?php _e( 'Search', 'grh' ); ?>" /></p>
 			</div>
-
-		<?php endif; ?>
-
-		<p><input type="submit" value="<?php _e( 'Search Resources', 'grh' ); ?>" /></p>
-
 		</form>
 
 		<?php

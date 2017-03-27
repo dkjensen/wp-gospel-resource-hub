@@ -199,7 +199,7 @@ abstract class Gospel_Resource_Hub_i18n {
 			'zho + 13'	 	=> 	'zh',
 			'zul'	 		=> 	'zu',
 			'zh-TW'			=>  'zh-hant',
-			'zho'			=>  'zh-hans',
+			'cmn'			=>  'zh-hans',
 
 		) );
 

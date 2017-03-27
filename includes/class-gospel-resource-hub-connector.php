@@ -23,9 +23,9 @@ final class Gospel_Resource_Hub_Connector {
 		if( $type == 'resources' ) {
 			$args = wp_parse_args( $args, array(
 				'q'		   => get_query_var( 'q' ),
-				'language' => get_query_var( 'language' ) ? get_query_var( 'language' ) : grh_convert_lang_code( grh_get_current_lang(), true ),
-				'number'   => get_query_var( 'posts_per_page' ),
-				'page'     => get_query_var( 'paged' ) ? get_query_var( 'paged' ) : 1
+				'user_language' => get_query_var( 'language' ) ? get_query_var( 'language' ) : grh_convert_lang_code( grh_get_current_lang(), true ),
+				'num_results'   => get_query_var( 'posts_per_page' ),
+				'num_offset'    => ! empty( get_query_var( 'paged' ) ) ? ( ( get_query_var( 'paged' ) - 1 ) * get_query_var( 'posts_per_page' ) ) : 0
 			) );
 		}elseif( $type == 'language' ) {
 			$args = wp_parse_args( $args, array(

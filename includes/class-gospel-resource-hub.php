@@ -5,6 +5,8 @@ class Gospel_Resource_Hub {
 
 	public $options;
 
+	public $query_uri;
+
 	public function __construct() {
 		$this->options = get_option( 'gospelrh' );
 	}
@@ -24,10 +26,19 @@ class Gospel_Resource_Hub {
 	        $GLOBALS['wp_query'] = $GLOBALS[ 'wp_the_query' ];
 
 	        add_action( 'pre_get_posts', array( $this, 'parse_query' ) );
+	        add_filter( 'template_include', array( $this, 'archive_template' ) );
 		}
+
+		$this->query_uri = $query_uri;
 
 		$this->multilingual_integration();
 	}
+
+
+	public function get_query_uri() {
+		return (string) $this->query_uri;
+	}
+
 
 	/**
 	 * Multilingual integration status
@@ -127,13 +138,30 @@ class Gospel_Resource_Hub {
 					'post_date' 		=> $resource['date_created'],
 					'post_content' 		=> $resource['link'],
 					'post_type' 		=> $post_type,
-					'grh_item' 			=> 1,
 					'post_parent' 		=> 0,
-					'post_language'     => grh_convert_lang_code( $resource['lang_id'] )
+					'post_language'     => grh_convert_lang_code( $resource['lang_id'] ),
+					'grh_item' 			=> 1,
+					'grh_lang_id'		=> $resource['lang_id'],
+					'grh_lang_name'		=> $resource['lang_name'],
+					'grh_country_name'	=> $resource['countryname'],
+					'grh_area'			=> $resource['area'],
+					'grh_media_type'	=> $resource['media'],
+					'grh_organization'	=> $resource['org']
 				) );
 			}
 		}
 
 		return $posts;
+	}
+
+
+	public function archive_template( $template ) {
+		$theme_template = locate_template( 'gospel-resource-hub/archive.php' );
+
+		if( $theme_template ) {
+			$template = $theme_template;
+		}
+
+		return $template;
 	}
 }

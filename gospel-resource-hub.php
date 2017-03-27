@@ -36,6 +36,7 @@ include_once GRH_PLUGIN_DIR . '/includes/class-gospel-resource-hub-connector.php
 include_once GRH_PLUGIN_DIR . '/includes/class-gospel-resource-hub-i18n.php';
 include_once GRH_PLUGIN_DIR . '/includes/i18n/class-polylang-gospel-resource-hub-i18n.php';
 include_once GRH_PLUGIN_DIR . '/includes/widgets/widget-gospel-resource-hub-filters.php';
+include_once GRH_PLUGIN_DIR . '/includes/template-functions.php';
 
 if( is_admin() ) {
 	include_once GRH_PLUGIN_DIR . '/includes/admin/class-gospel-resource-hub-settings.php';

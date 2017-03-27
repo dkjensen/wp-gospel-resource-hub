@@ -108,4 +108,14 @@ function grh_post_meta( $check, $object_id, $meta_key, $single ) {
 
 	return $check;
 }
-add_filter( "get_post_metadata", 'grh_post_meta', 15, 4 );
+add_filter( 'get_post_metadata', 'grh_post_meta', 15, 4 );
+
+
+function grh_post_view_format( $view_format ) {
+	if( empty( $_COOKIE['_post_view_format'] ) && empty( $_GET['view_format'] ) ) {
+		$view_format = 'list';
+	}
+
+	return $view_format;
+}
+add_filter( 'get_view_format', 'grh_post_view_format' );

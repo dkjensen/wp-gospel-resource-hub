@@ -18,10 +18,9 @@ class Gospel_Resource_Hub {
 		$uri       = explode( '?', $_SERVER['REQUEST_URI'], 2 );
 		$path      = trim( $uri[0], '/' );
 		$wp_query  = $GLOBALS['wp_query'];
-		$post_type = isset( $this->options['post_type'] ) ? get_post_type_object( $this->options['post_type'] ) : false;
-		$query_uri = apply_filters( 'grh_query_uri', $post_type ? $post_type->rewrite['slug'] : false, $wp_query, $post_type, $path );
+		$post_type = get_post_type_object( 'gospelrh' );
 
-		if( substr( $path, 0, strlen( $query_uri ) ) === $query_uri ) {
+		if( substr( $path, 0, strlen( $post_type->rewrite['slug'] ) ) === $post_type->rewrite['slug'] ) {
 	        $GLOBALS['wp_the_query'] = new GRH_Query();
 	        $GLOBALS['wp_query'] = $GLOBALS[ 'wp_the_query' ];
 
@@ -29,7 +28,7 @@ class Gospel_Resource_Hub {
 	        add_filter( 'template_include', array( $this, 'archive_template' ) );
 		}
 
-		$this->query_uri = $query_uri;
+		$this->query_uri = $post_type->rewrite['slug'];
 
 		$this->multilingual_integration();
 	}
@@ -37,6 +36,33 @@ class Gospel_Resource_Hub {
 
 	public function get_query_uri() {
 		return (string) $this->query_uri;
+	}
+
+
+	public function post_type_init() {
+		register_post_type( 'gospelrh', array(
+			'public' 				=> true,
+			'show_in_nav_menus' 	=> false,
+			'show_ui' 				=> false,
+			'has_archive'			=> apply_filters( 'grh_query_uri', 'resources' ),
+			'rewrite'				=> array( 'slug' => apply_filters( 'grh_query_uri', 'resources' ), 'with_front' => false ),
+			'labels'				=> array(
+				'name'               => _x( 'Gospel Resources', 'post type general name', 'gospelrh' ),
+				'singular_name'      => _x( 'Gospel Resource', 'post type singular name', 'gospelrh' ),
+				'menu_name'          => _x( 'Gospel Resources', 'admin menu', 'gospelrh' ),
+				'name_admin_bar'     => _x( 'Gospel Resource', 'add new on admin bar', 'gospelrh' ),
+				'add_new'            => _x( 'Add New', 'gospel resource', 'gospelrh' ),
+				'add_new_item'       => __( 'Add New Gospel Resource', 'gospelrh' ),
+				'new_item'           => __( 'New Gospel Resource', 'gospelrh' ),
+				'edit_item'          => __( 'Edit Gospel Resource', 'gospelrh' ),
+				'view_item'          => __( 'View Gospel Resource', 'gospelrh' ),
+				'all_items'          => __( 'All Gospel Resources', 'gospelrh' ),
+				'search_items'       => __( 'Search Gospel Resources', 'gospelrh' ),
+				'parent_item_colon'  => __( 'Parent Gospel Resources:', 'gospelrh' ),
+				'not_found'          => __( 'No gospel resources found.', 'gospelrh' ),
+				'not_found_in_trash' => __( 'No gospel resources found in Trash.', 'gospelrh' )
+			)
+		) );
 	}
 
 
@@ -103,7 +129,7 @@ class Gospel_Resource_Hub {
 		if( is_admin() )
 			return;
 
-		if( $query->is_main_query() && isset( $this->options['post_type'] ) && is_post_type_archive( $this->options['post_type'] ) ) {
+		if( $query->is_main_query() && is_grh() ) {
 			add_filter( 'posts_results', array( $this, 'posts_results' ), 10, 2 );
 		}
 	}
@@ -111,8 +137,6 @@ class Gospel_Resource_Hub {
 
 	public function posts_results( $posts, $query ) {
 		global $grh_db;
-
-		$post_type = (string) $this->options['post_type'];
 
 		$resources = $grh_db->get( 'resources' );
 
@@ -137,7 +161,7 @@ class Gospel_Resource_Hub {
 					'post_excerpt'		=> '',
 					'post_date' 		=> $resource['date_created'],
 					'post_content' 		=> $resource['link'],
-					'post_type' 		=> $post_type,
+					'post_type' 		=> 'gospelrh',
 					'post_parent' 		=> 0,
 					'post_language'     => grh_convert_lang_code( $resource['lang_id'] ),
 					'grh_item' 			=> 1,

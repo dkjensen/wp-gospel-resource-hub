@@ -7,7 +7,7 @@ function is_grh( $permalink = '' ) {
 		$permalink = home_url( $_SERVER['REQUEST_URI'] );
 	}
 
-	if( isset( $grh->query_uri ) && strpos( $permalink, $grh->query_uri ) ) {
+	if( is_post_type_archive( 'gospelrh' ) || ( isset( $grh->query_uri ) && strpos( $permalink, $grh->query_uri ) ) ) {
 		return true;
 	}
 

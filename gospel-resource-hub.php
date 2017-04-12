@@ -2,7 +2,7 @@
 /**
  *  Plugin Name: Gospel Resource Hub
  *  Description: Integration with Gospel Resouce Hub
- *  Version: 1.0.0
+ *  Version: 1.0.1
  *  Author: David Jensen
  *  Author URI: http://dkjensen.com
  *  Text Domain: grh
@@ -19,7 +19,7 @@ if( ! defined( 'GRH_PLUGIN_URL' ) ) {
 }
 
 if( ! defined( 'GRH_VERSION' ) ) {
-	define( 'GRH_VERSION', '1.0.0' );
+	define( 'GRH_VERSION', '1.0.1' );
 }
 
 if( version_compare( phpversion(), '5.3.0' ) < 0 ) {
@@ -49,6 +49,7 @@ if( is_admin() ) {
 
 $grh = new Gospel_Resource_Hub;
 
+add_action( 'init', array( $grh, 'post_type_init' ) );
 add_action( 'wp_loaded', array( $grh, 'load' ), 1 );
 
 add_filter( 'query_vars', array( $grh, 'query_vars' ) );

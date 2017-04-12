@@ -34,38 +34,14 @@ class Gospel_Resource_Hub_Settings {
 			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 		}
 
-		$options = get_option( 'gospelrh' );
+		$options 			= get_option( 'gospelrh' );
+		$default_thumbnail  = isset( $options['default_thumbnail'] ) ? absint( $options['default_thumbnail'] ) : '';
 
 		?>
 
 		<div class="wrap">
 			<h2><?php _e( 'Gospel Resource Hub', 'grh' ); ?></h2>
 			<form method="post" action="" enctype="multipart/form-data">
-
-			<?php
-
-			$post_types = get_post_types( array( 'public' => true, 'publicly_queryable' => true ), 'objects' );
-
-			$post_types_dropdown = '';
-
-			if( is_array( $post_types ) && ! empty( $post_types ) ) {
-
-				$selected = ! empty( $options['post_type'] ) ? esc_attr( $options['post_type'] ) : '';
-
-				$post_types_dropdown  = '<select name="gospelrh[post_type]">' . "\n";
-				$post_types_dropdown .= '<option value="">---</option>' . "\n";
-
-				foreach( $post_types as $post_type ) {
-					$post_types_dropdown .= sprintf( '<option value="%s" %s>%s</option>' . "\n", $post_type->name, selected( $post_type->name, $selected, false ), $post_type->label );
-				}
-
-				$post_types_dropdown .= '</select>' . "\n";
-
-			}
-
-			$default_thumbnail = isset( $options['default_thumbnail'] ) ? absint( $options['default_thumbnail'] ) : '';
-
-			?>
 				<table class="form-table">
 					<tbody>
 						<tr>
@@ -92,17 +68,6 @@ class Gospel_Resource_Hub_Settings {
 								<p class="description"><?php _e( 'Detected plugin for multilingual purposes.', 'grh' ); ?></p>
 							</td>
 						</tr>
-					<?php if( ! empty( $post_types_dropdown ) ) : ?>
-						<tr>
-							<th scope="row">
-								<label><?php _e( 'Post Type Integration', 'grh' ); ?></label>
-							</th>
-							<td>
-								<?php print $post_types_dropdown; ?>
-								<p class="description"><?php _e( 'Select a post type below to integrate Gospel Resource Hub resources with.', 'grh' ); ?></p>
-							</td>
-						</tr>
-					<?php endif; ?>
 						<tr>
 							<th scope="row">
 								<label><?php _e( 'Default thumbnail', 'grh' ); ?></label>

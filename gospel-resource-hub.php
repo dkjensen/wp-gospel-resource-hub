@@ -26,9 +26,8 @@ if( version_compare( phpversion(), '5.3.0' ) < 0 ) {
 	return;
 }
 
-$grh_query = 
-$grh_db    = new stdclass();
-$grh_i18n  = new Gospel_Resource_Hub_i18n();
+$grh_query   = 
+$grh_db      = new stdclass();
 
 include_once GRH_PLUGIN_DIR . '/includes/language-functions.php';
 include_once GRH_PLUGIN_DIR . '/includes/class-gospel-resource-hub.php';
@@ -37,6 +36,7 @@ include_once GRH_PLUGIN_DIR . '/includes/class-gospel-resource-hub-i18n.php';
 include_once GRH_PLUGIN_DIR . '/includes/i18n/class-polylang-gospel-resource-hub-i18n.php';
 include_once GRH_PLUGIN_DIR . '/includes/widgets/widget-gospel-resource-hub-filters.php';
 include_once GRH_PLUGIN_DIR . '/includes/template-functions.php';
+
 
 if( is_admin() ) {
 	include_once GRH_PLUGIN_DIR . '/includes/admin/class-gospel-resource-hub-settings.php';
@@ -47,7 +47,8 @@ if( is_admin() ) {
 }
 
 
-$grh = new Gospel_Resource_Hub;
+$grh_i18n  = new Gospel_Resource_Hub_i18n();
+$grh       = new Gospel_Resource_Hub;
 
 add_action( 'init', array( $grh, 'post_type_init' ) );
 add_action( 'wp_loaded', array( $grh, 'load' ), 1 );

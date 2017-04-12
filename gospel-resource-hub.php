@@ -27,8 +27,8 @@ if( version_compare( phpversion(), '5.3.0' ) < 0 ) {
 }
 
 $grh_query = 
-$grh_db    = 
-$grh_i18n  = new stdClass();
+$grh_db    = new stdclass();
+$grh_i18n  = new Gospel_Resource_Hub_i18n();
 
 include_once GRH_PLUGIN_DIR . '/includes/language-functions.php';
 include_once GRH_PLUGIN_DIR . '/includes/class-gospel-resource-hub.php';

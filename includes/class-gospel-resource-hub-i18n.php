@@ -1,7 +1,7 @@
 <?php
 
 
-abstract class Gospel_Resource_Hub_i18n {
+class Gospel_Resource_Hub_i18n {
 
 	protected $current_lang = 'en';
 
@@ -217,9 +217,13 @@ abstract class Gospel_Resource_Hub_i18n {
 	}
 
 
-	abstract protected function get_current_lang();
+	public function get_current_lang() {
+		return $this->current_lang;
+	}
 
-	abstract protected function get_default_lang();
+	public function get_default_lang() {
+		return $this->default_lang;
+	}
 
 
 }

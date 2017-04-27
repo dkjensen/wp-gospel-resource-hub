@@ -13,3 +13,7 @@ function is_grh( $permalink = '' ) {
 
 	return false;
 }
+
+function get_grh_archive_link() {
+	return get_post_type_archive_link( 'gospelrh' );
+}

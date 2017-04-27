@@ -35,7 +35,8 @@ class Gospel_Resource_Hub_Settings {
 		}
 
 		$options 			= get_option( 'gospelrh' );
-		$default_thumbnail  = isset( $options['default_thumbnail'] ) ? absint( $options['default_thumbnail'] ) : '';
+		$default_thumbnail  = isset( $options['default_thumbnail'] ) ? (int) $options['default_thumbnail'] : '';
+		$archive			= isset( $options['archive'] ) ? (int) $options['archive'] : '';
 
 		?>
 
@@ -66,6 +67,14 @@ class Gospel_Resource_Hub_Settings {
 								endif;
 								?>
 								<p class="description"><?php _e( 'Detected plugin for multilingual purposes.', 'grh' ); ?></p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label><?php _e( 'Gospel Resource Hub Page', 'grh' ); ?></label>
+							</th>
+							<td>
+								<?php wp_dropdown_pages( array( 'name' => 'gospelrh[archive]', 'selected' => $archive ) ); ?>
 							</td>
 						</tr>
 						<tr>

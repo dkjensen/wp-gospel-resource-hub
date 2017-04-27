@@ -20,15 +20,7 @@ class Gospel_Resource_Hub {
 		$wp_query  = $GLOBALS['wp_query'];
 		$post_type = get_post_type_object( 'gospelrh' );
 
-		if( substr( $path, 0, strlen( $post_type->rewrite['slug'] ) ) === $post_type->rewrite['slug'] ) {
-	        $GLOBALS['wp_the_query'] = new GRH_Query();
-	        $GLOBALS['wp_query'] = $GLOBALS[ 'wp_the_query' ];
-
-	        add_action( 'pre_get_posts', array( $this, 'parse_query' ) );
-	        add_filter( 'template_include', array( $this, 'archive_template' ) );
-		}
-
-		$this->query_uri = $post_type->rewrite['slug'];
+		add_action( 'pre_get_posts', array( $this, 'parse_query' ) );
 
 		$this->multilingual_integration();
 	}
@@ -129,7 +121,7 @@ class Gospel_Resource_Hub {
 		if( is_admin() )
 			return;
 
-		if( $query->is_main_query() && is_grh() ) {
+		if( ( $query->is_main_query() && is_grh() ) || isset( $query->query['is_grh'] ) ) {
 			add_filter( 'posts_results', array( $this, 'posts_results' ), 10, 2 );
 		}
 	}
@@ -179,11 +171,13 @@ class Gospel_Resource_Hub {
 	}
 
 
-	public function archive_template( $template ) {
-		$theme_template = locate_template( 'gospel-resource-hub/archive.php' );
+	public function load_template( $template ) {
+		$theme_template = locate_template( 'gospel-resource-hub/' . $template . '.php' );
 
 		if( $theme_template ) {
 			$template = $theme_template;
+		}else {
+			$template = load_template( GRH_PLUGIN_DIR . '/templates/' . $template . '.php' );
 		}
 
 		return $template;

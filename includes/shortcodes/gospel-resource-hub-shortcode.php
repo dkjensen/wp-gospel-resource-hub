@@ -27,17 +27,21 @@ function gospelrh_shortcode( $atts, $content = '' ) {
 				<th class="grh-organization"><?php _e( 'Organization', 'indigitous' ); ?></th>
 			</tr>
 		</thead>
-
+		<tbody>
+		
 		<?php while( $query->have_posts() ) : $query->the_post(); ?>
 
 			<?php $grh->load_template( 'content-resource' ); ?>
 
 		<?php endwhile; ?>
 
+		</tbody>
 	</table>
 
 	<?php
 	endif;
+
+	wp_reset_postdata();
 
 	do_action( 'after_gospelrh_shortcode' );
 

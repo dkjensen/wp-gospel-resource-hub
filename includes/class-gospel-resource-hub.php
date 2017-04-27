@@ -177,7 +177,7 @@ class Gospel_Resource_Hub {
 		if( $theme_template ) {
 			$template = $theme_template;
 		}else {
-			$template = load_template( GRH_PLUGIN_DIR . '/templates/' . $template . '.php' );
+			$template = load_template( GRH_PLUGIN_DIR . '/templates/' . $template . '.php', false );
 		}
 
 		return $template;

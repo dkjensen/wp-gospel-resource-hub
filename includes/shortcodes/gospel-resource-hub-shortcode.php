@@ -5,7 +5,7 @@ if( ! function_exists( 'gospelrh_shortcode' ) ) :
 function gospelrh_shortcode( $atts, $content = '' ) {
 	global $grh;
 
-	$query = new GRH_Query( array(
+	$grh_query = new GRH_Query( array(
 		'is_grh' => 1
 	) );
 
@@ -13,7 +13,7 @@ function gospelrh_shortcode( $atts, $content = '' ) {
 
 	do_action( 'before_gospelrh_shortcode' );
 
-	if( $query->have_posts() ) :
+	if( $grh_query->have_posts() ) :
 	?>
 
 	<table class="grh-list-table">
@@ -29,7 +29,7 @@ function gospelrh_shortcode( $atts, $content = '' ) {
 		</thead>
 		<tbody>
 		
-		<?php while( $query->have_posts() ) : $query->the_post(); ?>
+		<?php while( $grh_query->have_posts() ) : $grh_query->the_post(); ?>
 
 			<?php $grh->load_template( 'content-resource' ); ?>
 
@@ -39,6 +39,8 @@ function gospelrh_shortcode( $atts, $content = '' ) {
 	</table>
 
 	<?php
+	grh_pagination( $grh_query );
+
 	endif;
 
 	wp_reset_postdata();

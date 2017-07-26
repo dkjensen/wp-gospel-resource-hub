@@ -1,5 +1,8 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) )
+	exit;
+
 function grh_convert_lang_code( $code = '', $reverse = false ) {
 	global $grh_i18n;
 

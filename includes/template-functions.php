@@ -1,21 +1,21 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) )
+	exit;
+
 function is_grh( $permalink = '' ) {
 	global $grh;
 
-	if( empty( $permalink ) ) {
-		$permalink = home_url( $_SERVER['REQUEST_URI'] );
-	}
-
-	if( is_post_type_archive( 'gospelrh' ) || ( isset( $grh->query_uri ) && strpos( $permalink, $grh->query_uri ) ) ) {
+	if( isset( $grh->options['archive'] ) && $grh->options['archive'] == get_queried_object_id() )
 		return true;
-	}
 
 	return false;
 }
 
 function get_grh_archive_link() {
-	return get_post_type_archive_link( 'gospelrh' );
+	global $grh;
+
+	return isset( $grh->options['archive'] ) ? esc_url( get_permalink( $grh->options['archive'] ) ) : home_url();
 }
 
 

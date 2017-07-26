@@ -1,5 +1,7 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) )
+	exit;
 
 function grh_post_link( $permalink, $post ) {
 	global $post; // Override the property $post

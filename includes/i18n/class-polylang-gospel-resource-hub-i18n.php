@@ -1,5 +1,7 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) )
+	exit;
 
 class Polylang_Gospel_Resource_Hub_i18n extends Gospel_Resource_Hub_i18n {
 

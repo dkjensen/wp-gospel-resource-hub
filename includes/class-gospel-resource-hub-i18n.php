@@ -1,5 +1,7 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) )
+	exit;
 
 class Gospel_Resource_Hub_i18n {
 

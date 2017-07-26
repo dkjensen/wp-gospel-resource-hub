@@ -1,0 +1,94 @@
+.grh-list-table {
+	table-layout: fixed;
+	width: 100%;
+}
+.grh-list-table tr:not(:last-child) {
+	border-bottom: 1px solid rgba( 0, 0, 0, .1 );
+}
+.grh-list-table .grh-title {
+	width: 28%;
+}
+.grh-list-table .grh-lang-id,
+.grh-list-table .grh-lang-name,
+.grh-list-table .grh-country-name,
+.grh-list-table .grh-media-type {
+	width: 10.5%;
+}
+.grh-list-table .grh-organization {
+	width: 20%;
+}
+.grh-list-table .grh-launch {
+	width: 10%;
+}
+
+#grh-filters {
+	overflow: hidden;
+	margin: 0 0 1em;
+}
+#grh-filters .grh-filters-container {
+    float: left;
+    width: 75%;
+    padding-right: 1em;
+}
+#grh-filters .grh-filter {
+	width: 50%;
+	float: left;
+	padding: 0 .5em;
+}
+#grh-filters .grh-filter:first-child {
+	padding-left: 0;
+}
+#grh-filters .grh-filter:last-child {
+	padding-right: 0;
+}
+#grh-filters .grh-label {
+	display: none;
+}
+#grh-filters .grh-filter-submit {
+	float: left;
+	width: 25%;
+}
+#grh-filters p {
+	margin: 0;
+}
+#grh-filters input[type=submit] {
+	width: 100%;
+}
+#grh-filters input[type=submit],
+#grh-filters input[type=search],
+#grh-filters select {
+	width: 100%;
+	height: 45px;
+	-webkit-box-sizing: border-box;
+			box-sizing: border-box;
+}
+#grh-filters .grh-sponsored {
+	font-size: 11px;
+	text-align: right;
+	float: left;
+	width: 100%;
+	clear: both;
+	margin: 5px 0;
+}
+#grh-filters .grh-sponsored img {
+	vertical-align: middle;
+	margin: 0 0 0 4px;
+}
+@media screen and (min-width: 600px) {
+	.gospel-resource-hub [data-columns]:before {
+	    content: '3 .grid__item.one-third .masonry__item-wrapper';
+	}
+	.gospel-resource-hub .one-third {
+		width: 33.333% !important;
+	}
+}
+@media screen and (max-width: 599px) {
+	.grh-list-table,
+	.grh-list-table td {
+		font-size: .9em;
+	}
+	#grh-filters .grh-filter {
+		width: 100%;
+		padding: 0 0 .5em;
+	}
+}

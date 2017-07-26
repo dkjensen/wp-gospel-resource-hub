@@ -1,5 +1,7 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) )
+	exit;
 
 class Gospel_Resource_Hub {
 
@@ -21,40 +23,9 @@ class Gospel_Resource_Hub {
 		$post_type = get_post_type_object( 'gospelrh' );
 
 		add_action( 'pre_get_posts', array( $this, 'parse_query' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 5 );
 
 		$this->multilingual_integration();
-	}
-
-
-	public function get_query_uri() {
-		return (string) $this->query_uri;
-	}
-
-
-	public function post_type_init() {
-		register_post_type( 'gospelrh', array(
-			'public' 				=> true,
-			'show_in_nav_menus' 	=> false,
-			'show_ui' 				=> false,
-			'has_archive'			=> apply_filters( 'grh_query_uri', 'resources' ),
-			'rewrite'				=> array( 'slug' => apply_filters( 'grh_query_uri', 'resources' ), 'with_front' => false ),
-			'labels'				=> array(
-				'name'               => _x( 'Gospel Resources', 'post type general name', 'gospelrh' ),
-				'singular_name'      => _x( 'Gospel Resource', 'post type singular name', 'gospelrh' ),
-				'menu_name'          => _x( 'Gospel Resources', 'admin menu', 'gospelrh' ),
-				'name_admin_bar'     => _x( 'Gospel Resource', 'add new on admin bar', 'gospelrh' ),
-				'add_new'            => _x( 'Add New', 'gospel resource', 'gospelrh' ),
-				'add_new_item'       => __( 'Add New Gospel Resource', 'gospelrh' ),
-				'new_item'           => __( 'New Gospel Resource', 'gospelrh' ),
-				'edit_item'          => __( 'Edit Gospel Resource', 'gospelrh' ),
-				'view_item'          => __( 'View Gospel Resource', 'gospelrh' ),
-				'all_items'          => __( 'All Gospel Resources', 'gospelrh' ),
-				'search_items'       => __( 'Search Gospel Resources', 'gospelrh' ),
-				'parent_item_colon'  => __( 'Parent Gospel Resources:', 'gospelrh' ),
-				'not_found'          => __( 'No gospel resources found.', 'gospelrh' ),
-				'not_found_in_trash' => __( 'No gospel resources found in Trash.', 'gospelrh' )
-			)
-		) );
 	}
 
 
@@ -121,7 +92,7 @@ class Gospel_Resource_Hub {
 		if( is_admin() )
 			return;
 
-		if( ( $query->is_main_query() && is_grh() ) || isset( $query->query['is_grh'] ) ) {
+		if( isset( $query->query['is_grh'] ) ) {
 			add_filter( 'posts_results', array( $this, 'posts_results' ), 10, 2 );
 		}
 	}
@@ -130,9 +101,14 @@ class Gospel_Resource_Hub {
 	public function posts_results( $posts, $query ) {
 		global $grh_db;
 
-		$resources = $grh_db->get( 'resources' );
+		if( ! $query instanceof GRH_Query )
+			return $posts;
 
-		if( ! isset( $resources['posts'] ) ) {
+		$resources = $grh_db->get( 'resources', array(
+			'posts_per_page' => isset( $query->query['posts_per_page'] ) ? (int) $query->query['posts_per_page'] : 10
+		) );
+
+		if( empty( $resources['posts'] ) ) {
 			return array();
 		}
 
@@ -151,7 +127,7 @@ class Gospel_Resource_Hub {
 					'ping_status' 		=> 'open',
 					'post_author' 		=> '',
 					'post_excerpt'		=> '',
-					'post_date' 		=> $resource['date_created'],
+					'post_date' 		=> isset( $resource['date_created'] ) ? $resource['date_created'] : time(),
 					'post_content' 		=> $resource['link'],
 					'post_type' 		=> 'gospelrh',
 					'post_parent' 		=> 0,
@@ -168,6 +144,37 @@ class Gospel_Resource_Hub {
 		}
 
 		return $posts;
+	}
+
+
+	public function parse_languages() {
+		if( false === ( $langs = get_transient( 'grh_filters_langs' ) ) ) {
+			if( empty( $this->options['langs'] ) )
+				return array();
+
+			global $grh_db;
+
+			$lang_codes = array_map( 'trim', explode( ',', $this->options['langs'] ) );
+
+			$languages  = $grh_db->get( 'language', array( 'codes' => $this->options['langs'] ) );
+
+			$langs = array();
+
+			if( ! empty( $languages ) && is_array( $languages ) && ! isset( $languages['ErrorCode'] ) ) {
+				foreach( $languages as $language ) {
+					$langs[$language['lang_id']] = $language['ref_name'];
+				}
+			}
+
+			set_transient( 'grh_filters_langs', $langs );
+		}
+
+		return $langs;
+	}
+
+
+	public function enqueue_scripts() {
+		wp_register_style( 'grh-frontend', GRH_PLUGIN_URL . 'assets/css/grh-frontend.css', array(), GRH_VERSION, false );
 	}
 
 

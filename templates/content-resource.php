@@ -5,4 +5,5 @@
 	<td class="grh-country-name"><?php print esc_attr( $post->grh_country_name ); ?></td>
 	<td class="grh-media-type"><?php print esc_attr( $post->grh_media_type ); ?></td>
 	<td class="grh-organization"><?php print esc_attr( $post->grh_organization ); ?></td>
+	<td class="grh-launch"><a href="<?php the_permalink(); ?>"><?php print apply_filters( 'grh_launch_text', __( 'Launch &raquo;', 'gospelrh' ) ); ?></a></td>
 </tr>

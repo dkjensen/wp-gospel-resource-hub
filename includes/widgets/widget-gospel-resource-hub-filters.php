@@ -1,5 +1,8 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) )
+	exit;
+
 /**
  * Adds Foo_Widget widget.
  */
@@ -23,11 +26,7 @@ class GRH_Filters extends WP_Widget {
 	 * @param array $instance Saved values from database.
 	 */
 	public function widget( $args, $instance ) {
-		global $wp_query, $grh;
-
-		if( ! $wp_query instanceof GRH_Query ) {
-			return '';
-		}
+		global $grh;
 
 		echo $args['before_widget'];
 		if ( ! empty( $instance['title'] ) ) {
@@ -57,7 +56,7 @@ class GRH_Filters extends WP_Widget {
 
 		?>
 
-		<form method="get" id="grh-filters" action="<?php print esc_url( home_url( $grh->get_query_uri() ) ); ?>">
+		<form method="get" id="grh-filters" action="<?php print get_grh_archive_link(); ?>">
 			<div class="grh-filters-container">
 				<?php if( ! empty( $instance['show_search'] ) ) : ?>
 
@@ -76,8 +75,6 @@ class GRH_Filters extends WP_Widget {
 							<?php
 							if( ! empty( $langs ) ) {
 								$selected = ! empty( get_query_var( 'language' ) ) ? esc_attr( get_query_var( 'language' ) ) : grh_convert_lang_code( grh_get_current_lang(), true );
-
-								var_dump( $selected );
 
 								foreach( $langs as $lang_id => $label ) {
 									printf( '<option value="%s" %s>%s</option>', $lang_id, selected( $selected, $lang_id ), $label );
@@ -112,7 +109,7 @@ class GRH_Filters extends WP_Widget {
 	 * @param array $instance Previously saved values from database.
 	 */
 	public function form( $instance ) {
-		$title 		 = ! empty( $instance['title'] ) ? $instance['title'] : esc_html__( 'New title', 'grh' );
+		$title 		 = isset( $instance['title'] ) ? $instance['title'] : esc_html__( 'New title', 'grh' );
 		$show_search = ! empty( $instance['show_search'] ) ? 1 : 0;
 		$show_langs  = ! empty( $instance['show_langs'] ) ? esc_attr( $instance['show_langs'] ) : '';
 

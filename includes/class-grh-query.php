@@ -1,5 +1,8 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) )
+	exit;
+
 /**
  * We need to extend WP_Query in order to retain our custom WP_Post
  * implementations. Native WP_Query maps get_post() to the $this->posts 

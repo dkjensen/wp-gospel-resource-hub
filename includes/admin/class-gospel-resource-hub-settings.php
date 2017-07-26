@@ -1,5 +1,7 @@
 <?php
 
+if( ! defined( 'ABSPATH' ) )
+	exit;
 
 class Gospel_Resource_Hub_Settings {
 
@@ -18,7 +20,7 @@ class Gospel_Resource_Hub_Settings {
 
 
 	public function admin_menu() {
-		add_options_page( __( 'Gospel Resource Hub', 'grh' ), __( 'Gospel Resource Hub', 'grh' ), 'manage_options', 'gospel-resource-hub', array( $this, 'admin_settings' ) );
+		add_options_page( __( 'Gospel Resource Hub', 'gospelrh' ), __( 'Gospel Resource Hub', 'gospelrh' ), 'manage_options', 'gospel-resource-hub', array( $this, 'admin_settings' ) );
 	}
 
 
@@ -37,49 +39,62 @@ class Gospel_Resource_Hub_Settings {
 		$options 			= get_option( 'gospelrh' );
 		$default_thumbnail  = isset( $options['default_thumbnail'] ) ? (int) $options['default_thumbnail'] : '';
 		$archive			= isset( $options['archive'] ) ? (int) $options['archive'] : '';
+		$langs				= isset( $options['langs'] ) ? esc_attr( $options['langs'] ) : '';
+		$sponsored			= ! empty( $options['sponsored'] ) ? esc_attr( $options['sponsored'] ) : 'yes';
 
 		?>
 
 		<div class="wrap">
-			<h2><?php _e( 'Gospel Resource Hub', 'grh' ); ?></h2>
+			<h2><?php _e( 'Gospel Resource Hub', 'gospelrh' ); ?></h2>
+			<p><strong><?php _e( 'Plugin Usage', 'gospelrh' ); ?></strong></p>
+			<p><?php printf( __( 'Use the %s shortcode to display the Gospel Resource Hub on the desired page.', 'gospelrh' ), '<code>[gospel-resource-hub]</code>' ); ?></p>
 			<form method="post" action="" enctype="multipart/form-data">
 				<table class="form-table">
 					<tbody>
 						<tr>
 							<th scope="row">
-								<label><?php _e( 'Multilingual Integration', 'grh' ); ?></label>
+								<label><?php _e( 'Multilingual Integration', 'gospelrh' ); ?></label>
 							</th>
 							<td>
 								<?php 
 								if( false !== ( $multilingual = $grh->multilingual_integration() ) ) : 
-									printf( '<p class="dashicons-before dashicons-yes" style="color: #46b450;">%s</p>', $multilingual['integration'] . __( ' is active.', 'grh' ) );
+									printf( '<p class="dashicons-before dashicons-yes" style="color: #46b450;">%s</p>', $multilingual['integration'] . __( ' is active.', 'gospelrh' ) );
 
 									switch( $multilingual['status'] ) {
 										case 1 :
-											printf( '<p class="dashicons-before dashicons-no" style="color: #dc3232;">%s</p>', $multilingual['integration'] . __( ' plugin is active, but not properly integrated.', 'grh' ) );
+											printf( '<p class="dashicons-before dashicons-no" style="color: #dc3232;">%s</p>', $multilingual['integration'] . __( ' plugin is active, but not properly integrated.', 'gospelrh' ) );
 											break;
 										case 2 :
-											printf( '<p class="dashicons-before dashicons-yes" style="color: #46b450;">%s</p>', __( 'Multilingual plugin is correctly integrated.', 'grh' ) );
+											printf( '<p class="dashicons-before dashicons-yes" style="color: #46b450;">%s</p>', __( 'Multilingual plugin is correctly integrated.', 'gospelrh' ) );
 											break;
 									}
 								else :
-									printf( '<p class="dashicons-before dashicons-no" style="color: #dc3232;">%s</p>', __( 'No multilingual plugin detected.', 'grh' ) );
+									printf( '<p class="dashicons-before dashicons-no" style="color: #dc3232;">%s</p>', __( 'No multilingual plugin detected.', 'gospelrh' ) );
 								endif;
 								?>
-								<p class="description"><?php _e( 'Detected plugin for multilingual purposes.', 'grh' ); ?></p>
+								<p class="description"><?php _e( 'Detected plugin for multilingual purposes.', 'gospelrh' ); ?></p>
 							</td>
 						</tr>
 						<tr>
 							<th scope="row">
-								<label><?php _e( 'Gospel Resource Hub Page', 'grh' ); ?></label>
+								<label><?php _e( 'Gospel Resource Hub Page', 'gospelrh' ); ?></label>
 							</th>
 							<td>
-								<?php wp_dropdown_pages( array( 'name' => 'gospelrh[archive]', 'selected' => $archive ) ); ?>
+								<?php wp_dropdown_pages( array( 'name' => 'gospelrh[archive]', 'selected' => $archive, 'class' => 'regular-text' ) ); ?>
 							</td>
 						</tr>
 						<tr>
 							<th scope="row">
-								<label><?php _e( 'Default thumbnail', 'grh' ); ?></label>
+								<label><?php _e( 'Language Selector Filter', 'gospelrh' ); ?></label>
+							</th>
+							<td>
+								<input type="text" name="gospelrh[langs]" value="<?php print $langs; ?>" class="regular-text" />
+								<p class="description"><?php _e( 'Comma delimited ISO 639-3 language codes (e.g. "eng,spa,ger,rus,ara,fra")', 'gospelrh' ); ?></p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label><?php _e( 'Default thumbnail', 'gospelrh' ); ?></label>
 							</th>
 							<td>
 								<div class="grh-thumb <?php if( ! empty( $default_thumbnail ) ) print 'set'; ?>">
@@ -96,13 +111,22 @@ class Gospel_Resource_Hub_Settings {
 									</div>
 									<input type="hidden" name="gospelrh[default_thumbnail]" id="gospelrh[default_thumbnail]" value="<?php print $default_thumbnail; ?>" />
 									<div class="grh-thumb-options isset">
-										<button class="button-secondary grh-upload-thumb"><?php _e( 'Change Thumbnail', 'grh' ); ?></button>
-										<button class="button-secondary grh-remove-thumb"><?php _e( 'Remove', 'grh' ) ?></button>
+										<button class="button-secondary grh-upload-thumb"><?php _e( 'Change Thumbnail', 'gospelrh' ); ?></button>
+										<button class="button-secondary grh-remove-thumb"><?php _e( 'Remove', 'gospelrh' ) ?></button>
 									</div>
 									<div class="grh-thumb-options notset">
-										<button class="button-secondary grh-upload-thumb"><?php _e( 'Choose Thumbnail', 'grh' ); ?></button>
+										<button class="button-secondary grh-upload-thumb"><?php _e( 'Choose Thumbnail', 'gospelrh' ); ?></button>
 									</div>
 								</div>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label><?php _e( 'Miscellaneous', 'gospelrh' ); ?></label>
+							</th>
+							<td>
+								<label><input type="checkbox" name="gospelrh[sponsored]" value="yes" <?php checked( $sponsored, 'yes' ); ?> class="regular-text" /> <?php _e( 'Show "Powered by Indigitous" badge?', 'gospelrh' ); ?></label>
+								<p class="description"><?php _e( 'Consider giving credit to Indigitous for supporting the Gospel Resource Hub service.', 'gospelrh' ); ?></p>
 							</td>
 						</tr>
 					</tbody>
@@ -127,7 +151,14 @@ class Gospel_Resource_Hub_Settings {
 			return;
 
 		if( isset( $_POST['_grh_action'] ) && $_POST['_grh_action'] == 'save_settings' && current_user_can( 'manage_options' ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'grh_save_settings' ) ) {
+			
+			if( ! isset( $_POST['gospelrh']['sponsored'] ) ) {
+				$_POST['gospelrh']['sponsored'] = 'no';
+			}
+
 			update_option( 'gospelrh', $_POST['gospelrh'] );
+
+			delete_transient( 'grh_filters_langs' );
 		}
 	}
 

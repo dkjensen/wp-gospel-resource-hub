@@ -3,7 +3,7 @@
 if( ! defined( 'ABSPATH' ) )
 	exit;
 
-function grh_post_link( $permalink, $post ) {
+function grh_post_link( $permalink ) {
 	global $post; // Override the property $post
 
 	if( $post->grh_item ) {
